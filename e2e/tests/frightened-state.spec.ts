@@ -37,8 +37,22 @@ test.describe('power pellet role reversal', () => {
     const eaten = await eatAPowerPellet(runner, hunter);
     expect(eaten, 'never reached a power pellet within the budget').toBe(true);
 
-    await expect(hunter.getByTestId('inversion-warning')).toBeHidden({ timeout: 6_000 });
-    await expect(hunter.getByTestId('frightened-overlay')).toBeVisible();
+    // Both conditions are checked in ONE poll rather than as two sequential assertions. The gap
+    // between them is the problem: inversion clears at 3s but the overlay itself vanishes at 8s,
+    // so a slow first assertion can leave the second with no window left and fail for timing
+    // reasons rather than because the behaviour is wrong.
+    await expect
+      .poll(
+        async () => {
+          const [inverted, overlay] = await Promise.all([
+            hunter.getByTestId('inversion-warning').isVisible(),
+            hunter.getByTestId('frightened-overlay').isVisible(),
+          ]);
+          return { inverted, overlay };
+        },
+        { timeout: 7_000 },
+      )
+      .toEqual({ inverted: false, overlay: true });
   });
 
   test('the overlay clears when the window lapses uncaught', async ({ browser }) => {
