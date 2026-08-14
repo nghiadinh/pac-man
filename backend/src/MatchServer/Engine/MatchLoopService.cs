@@ -57,16 +57,30 @@ public sealed class MatchLoopService(
     {
         foreach (var handle in matches.ActiveMatches)
         {
-            var ended = handle.Locked(match =>
+            var (ended, events) = handle.Locked(match =>
             {
                 if (match.Status != MatchStatus.Active)
                 {
-                    return false;
+                    return (false, (IReadOnlyList<ScoreEvent>)Array.Empty<ScoreEvent>());
                 }
 
-                Advance(match, deltaMs);
-                return match.Status == MatchStatus.Ended;
+                var produced = Advance(match, deltaMs);
+                return (match.Status == MatchStatus.Ended, (IReadOnlyList<ScoreEvent>)produced);
             });
+
+            // FR-019: both players see every scoring action, within the SC-005 one-second budget.
+            foreach (var scoreEvent in events)
+            {
+                await hub.Clients.Group(handle.MatchId).SendAsync(
+                    "ScoreEvent",
+                    new
+                    {
+                        eventType = scoreEvent.Type.ToString(),
+                        points = scoreEvent.Points,
+                        recipient = scoreEvent.Recipient.ToString(),
+                    },
+                    ct);
+            }
 
             await BroadcastAsync(handle, ct);
 
@@ -94,46 +108,65 @@ public sealed class MatchLoopService(
     /// Steps 2-6 arrive with their user stories; the ordering seam exists from the start so those
     /// stories slot in without renegotiating determinism.
     /// </remarks>
-    private void Advance(MatchState match, double deltaMs)
+    private List<ScoreEvent> Advance(MatchState match, double deltaMs)
     {
+        var events = new List<ScoreEvent>();
+
         // 1. clock
         match.ElapsedMs += (long)Math.Round(deltaMs);
 
-        // 2-6. rule pipeline (US1/US2/US3)
+        // 2-3. speeds and movement
+        MovementRules.Advance(match, deltaMs);
 
-        // 7. win conditions
-        EvaluateTimeout(match);
+        // 4. collisions - BEFORE pickups, which is the FR-021 rule
+        var collision = CollisionRules.Resolve(match);
+        events.AddRange(collision.ScoreEvents);
+
+        if (collision.PacmanEliminated)
+        {
+            log.PacmanEliminated(match.MatchId, match.ElapsedMs, match.Pacman?.LivesRemaining ?? 0);
+        }
+
+        // 5. pickups
+        var pellets = PelletRules.Collect(match);
+        events.AddRange(pellets.ScoreEvents);
+
+        if (pellets.PowerPelletEaten)
+        {
+            var wasReset = PelletRules.StartOrResetFrightened(match);
+            log.FrightenedStarted(match.MatchId, match.ElapsedMs, wasReset);
+        }
+
+        // 6. timers
+        ExpireGhostRespawn(match);
+
+        // 7. win conditions, on fully settled state
+        WinConditionRules.Evaluate(match);
+
+        if (match.Status == MatchStatus.Ended && match.Outcome is not null)
+        {
+            log.MatchEnded(
+                match.MatchId, match.Outcome, match.ElapsedMs, match.Map.ClearedFraction);
+        }
+
+        return events;
     }
 
     /// <summary>
-    /// The only win condition available before US1 lands: the 180-second clock expiring (FR-014).
-    /// The full evaluation - including the 70% threshold and the FR-023 tie-break - is
-    /// WinConditionRules, added with User Story 1.
+    /// FR-003: returns the Ghost to play once its 5-second respawn delay has elapsed.
+    /// The eyes-only leg of this (FR-009) arrives with User Story 2.
     /// </summary>
-    private void EvaluateTimeout(MatchState match)
+    private static void ExpireGhostRespawn(MatchState match)
     {
-        if (match.RemainingMs > 0)
+        if (match.Ghost is not { GhostSubState: GhostSubState.Respawning } ghost)
         {
             return;
         }
 
-        var cleared = match.Map.ClearedFraction;
-        var pacmanScore = match.Pacman?.Score ?? 0;
-        var ghostScore = match.Ghost?.Score ?? 0;
-
-        // FR-017: below the threshold the Ghost wins outright. At or above it, scores decide,
-        // with an exact tie going to Pac-Man (FR-023).
-        var (winner, reason) = cleared >= BalanceConstants.Match.ClearThresholdPct
-            ? pacmanScore >= ghostScore
-                ? (Role.Runner, MatchEndReason.TimeoutClearThresholdMet)
-                : (Role.Hunter, MatchEndReason.TimeoutClearThresholdMissed)
-            : (Role.Hunter, MatchEndReason.TimeoutClearThresholdMissed);
-
-        match.End(winner, reason);
-
-        if (match.Outcome is not null)
+        if (ghost.RespawnReadyAtMs is { } readyAt && match.ElapsedMs >= readyAt)
         {
-            log.MatchEnded(match.MatchId, match.Outcome, match.ElapsedMs, cleared);
+            ghost.GhostSubState = GhostSubState.Normal;
+            ghost.RespawnReadyAtMs = null;
         }
     }
 

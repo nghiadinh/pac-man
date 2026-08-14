@@ -7,7 +7,9 @@
     "ghostCorneringMultiplier": 0.95,
     "ghostSpeedFrightened": 0.7,
     "eyesSpeed": 1.5,
-    "$spec": "FR-001 (base speeds + multiplicative cornering penalty until next tile center), FR-006 (frightened), FR-009 (eyes-only)"
+    "baseTilesPerSecond": 5.0,
+    "$spec": "FR-001 (base speeds + multiplicative cornering penalty until next tile center), FR-006 (frightened), FR-009 (eyes-only)",
+    "$note": "baseTilesPerSecond is NOT spec-derived: the spec fixes only the RATIOS between roles (100% vs 95% etc.), never an absolute pace. It lives here so the one-edit-site rule still holds, but changing it alters feel, not balance - the ratios above are what the Success Criteria depend on."
   },
 
   "frightened": {
