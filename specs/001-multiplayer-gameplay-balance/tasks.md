@@ -88,35 +88,35 @@ victory — quickstart.md scenario 1
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T026 [P] [US1] Unit tests for the 100%/95% speed differential and Pac-Man's zero-penalty cornering vs. the Ghost's cornering penalty — multiplicative 0.95 on current effective speed (0.95 × 0.95 = 0.9025 in normal state) lasting until the next tile center (FR-001) — in backend/tests/MatchServer.UnitTests/MovementRulesTests.cs
-- [ ] T027 [P] [US1] Unit tests for normal-state collision producing exactly one life loss and the 0.8x0.8 collision box (FR-002, FR-004) in backend/tests/MatchServer.UnitTests/CollisionRulesTests.cs
-- [ ] T028 [P] [US1] Unit tests for all win paths including the ≥70% threshold boundary and the FR-023 tie-break to Pac-Man (FR-015, FR-016, FR-017, FR-023) in backend/tests/MatchServer.UnitTests/WinConditionRulesTests.cs
-- [ ] T029 [P] [US1] Unit test asserting that when the match timer reaches 0:00 on the same tick Pac-Man collects the final pellet, the instant-clear victory (FR-015) takes precedence over timeout evaluation (FR-017), in backend/tests/MatchServer.UnitTests/WinConditionSimultaneityTests.cs
-- [ ] T030 [P] [US1] Unit tests for pellet +10, power pellet +50, elimination +500, and the +5/second time bonus (FR-018) in backend/tests/MatchServer.UnitTests/ScoringRulesTests.cs
-- [ ] T031 [P] [US1] Integration test driving a match to Ghost victory by lives depletion in backend/tests/MatchServer.IntegrationTests/LivesDepletedTests.cs
-- [ ] T032 [P] [US1] Integration test driving a match to Pac-Man victory by 100% pellet clear before timeout in backend/tests/MatchServer.IntegrationTests/PelletsClearedTests.cs
-- [ ] T033 [P] [US1] Integration test for the timer-expiry evaluation across the <70%, ≥70%-higher-score, and exact-tie cases in backend/tests/MatchServer.IntegrationTests/TimeoutEvaluationTests.cs
-- [ ] T034 [P] [US1] Integration test asserting a mid-match disconnect immediately forfeits to the remaining player with no grace period (FR-020) in backend/tests/MatchServer.IntegrationTests/DisconnectForfeitTests.cs
-- [ ] T035 [P] [US1] Playwright end-to-end spec covering quickstart.md scenario 1 with two BrowserContexts (one per role) in e2e/tests/core-match-loop.spec.ts
+- [X] T026 [P] [US1] Unit tests for the 100%/95% speed differential and Pac-Man's zero-penalty cornering vs. the Ghost's cornering penalty — multiplicative 0.95 on current effective speed (0.95 × 0.95 = 0.9025 in normal state) lasting until the next tile center (FR-001) — in backend/tests/MatchServer.UnitTests/MovementRulesTests.cs
+- [X] T027 [P] [US1] Unit tests for normal-state collision producing exactly one life loss and the 0.8x0.8 collision box (FR-002, FR-004) in backend/tests/MatchServer.UnitTests/CollisionRulesTests.cs
+- [X] T028 [P] [US1] Unit tests for all win paths including the ≥70% threshold boundary and the FR-023 tie-break to Pac-Man (FR-015, FR-016, FR-017, FR-023) in backend/tests/MatchServer.UnitTests/WinConditionRulesTests.cs
+- [X] T029 [P] [US1] Unit test asserting that when the match timer reaches 0:00 on the same tick Pac-Man collects the final pellet, the instant-clear victory (FR-015) takes precedence over timeout evaluation (FR-017), in backend/tests/MatchServer.UnitTests/WinConditionSimultaneityTests.cs
+- [X] T030 [P] [US1] Unit tests for pellet +10, power pellet +50, elimination +500, and the +5/second time bonus (FR-018) in backend/tests/MatchServer.UnitTests/ScoringRulesTests.cs
+- [X] T031 [P] [US1] Integration test driving a match to Ghost victory by lives depletion in backend/tests/MatchServer.IntegrationTests/LivesDepletedTests.cs
+- [X] T032 [P] [US1] Integration test driving a match to Pac-Man victory by 100% pellet clear before timeout in backend/tests/MatchServer.IntegrationTests/PelletsClearedTests.cs
+- [X] T033 [P] [US1] Integration test for the timer-expiry evaluation across the <70%, ≥70%-higher-score, and exact-tie cases in backend/tests/MatchServer.IntegrationTests/TimeoutEvaluationTests.cs
+- [X] T034 [P] [US1] Integration test asserting a mid-match disconnect immediately forfeits to the remaining player with no grace period (FR-020) in backend/tests/MatchServer.IntegrationTests/DisconnectForfeitTests.cs
+- [X] T035 [P] [US1] Playwright end-to-end spec covering quickstart.md scenario 1 with two BrowserContexts (one per role) in e2e/tests/core-match-loop.spec.ts
 
 ### Implementation for User Story 1
 
-- [ ] T036 [P] [US1] Implement MovementRules in backend/src/MatchServer/Engine/MovementRules.cs — grid movement, the 100%/95% base speeds, Pac-Man pre-buffered cornering, and the Ghost's off-center turn penalty (FR-001)
-- [ ] T037 [P] [US1] Implement ScoringRules in backend/src/MatchServer/Engine/ScoringRules.cs covering the FR-018 matrix rows reachable in this story (pellet, power pellet, elimination, time bonus)
-- [ ] T038 [US1] Implement normal-state collision detection and life decrement in backend/src/MatchServer/Engine/CollisionRules.cs (FR-002, FR-004)
-- [ ] T039 [US1] Implement WinConditionRules in backend/src/MatchServer/Engine/WinConditionRules.cs — instant clear, lives depleted, timeout evaluation against the 70% threshold, and the Pac-Man tie-break (FR-015, FR-016, FR-017, FR-023)
-- [ ] T040 [US1] Implement pellet collection and running clear-percentage tracking against totalPelletCount in backend/src/MatchServer/Engine/PelletRules.cs
-- [ ] T041 [US1] Implement Pac-Man life loss, respawn positioning, and the Ghost's 5-second post-elimination respawn delay in the tick pipeline at backend/src/MatchServer/Engine/MatchLoopService.cs (FR-002, FR-003)
-- [ ] T042 [US1] Implement the 180-second match countdown and its expiry hand-off to WinConditionRules in backend/src/MatchServer/Engine/MatchLoopService.cs (FR-014)
-- [ ] T043 [US1] Implement OnDisconnectedAsync forfeit resolution in backend/src/MatchServer/Hubs/MatchHub.cs (FR-020)
-- [ ] T044 [US1] Emit the MatchEnded event with winner, reason, and both final scores, then dispose the match and its group, in backend/src/MatchServer/Hubs/MatchHub.cs per contracts/match-room-protocol.md
-- [ ] T045 [US1] Emit ScoreEvent messages to both clients on every scoring action within the SC-005 1-second budget, in backend/src/MatchServer/Hubs/MatchHub.cs (FR-019)
-- [ ] T046 [P] [US1] Implement the canvas board draw loop (maze walls, pellets, power pellets) in frontend/src/render/boardRenderer.ts against the black clear color
-- [ ] T047 [P] [US1] Implement Pac-Man and Ghost sprite rendering with facing direction in frontend/src/render/spriteRenderer.ts
-- [ ] T048 [P] [US1] Build the MatchBoard component that mounts and sizes the canvas in frontend/src/components/MatchBoard.tsx
-- [ ] T049 [P] [US1] Build the HUD components for score, match timer, and lives in frontend/src/components/Hud.tsx
-- [ ] T050 [P] [US1] Build the results screen rendering MatchEnded winner and reason in frontend/src/components/ResultsScreen.tsx
-- [ ] T051 [US1] Implement keyboard input capture and direction-change forwarding to SendInput in frontend/src/hooks/useKeyboardInput.ts
+- [X] T036 [P] [US1] Implement MovementRules in backend/src/MatchServer/Engine/MovementRules.cs — grid movement, the 100%/95% base speeds, Pac-Man pre-buffered cornering, and the Ghost's off-center turn penalty (FR-001)
+- [X] T037 [P] [US1] Implement ScoringRules in backend/src/MatchServer/Engine/ScoringRules.cs covering the FR-018 matrix rows reachable in this story (pellet, power pellet, elimination, time bonus)
+- [X] T038 [US1] Implement normal-state collision detection and life decrement in backend/src/MatchServer/Engine/CollisionRules.cs (FR-002, FR-004)
+- [X] T039 [US1] Implement WinConditionRules in backend/src/MatchServer/Engine/WinConditionRules.cs — instant clear, lives depleted, timeout evaluation against the 70% threshold, and the Pac-Man tie-break (FR-015, FR-016, FR-017, FR-023)
+- [X] T040 [US1] Implement pellet collection and running clear-percentage tracking against totalPelletCount in backend/src/MatchServer/Engine/PelletRules.cs
+- [X] T041 [US1] Implement Pac-Man life loss, respawn positioning, and the Ghost's 5-second post-elimination respawn delay in the tick pipeline at backend/src/MatchServer/Engine/MatchLoopService.cs (FR-002, FR-003)
+- [X] T042 [US1] Implement the 180-second match countdown and its expiry hand-off to WinConditionRules in backend/src/MatchServer/Engine/MatchLoopService.cs (FR-014)
+- [X] T043 [US1] Implement OnDisconnectedAsync forfeit resolution in backend/src/MatchServer/Hubs/MatchHub.cs (FR-020)
+- [X] T044 [US1] Emit the MatchEnded event with winner, reason, and both final scores, then dispose the match and its group, in backend/src/MatchServer/Hubs/MatchHub.cs per contracts/match-room-protocol.md
+- [X] T045 [US1] Emit ScoreEvent messages to both clients on every scoring action within the SC-005 1-second budget, in backend/src/MatchServer/Hubs/MatchHub.cs (FR-019)
+- [X] T046 [P] [US1] Implement the canvas board draw loop (maze walls, pellets, power pellets) in frontend/src/render/boardRenderer.ts against the black clear color
+- [X] T047 [P] [US1] Implement Pac-Man and Ghost sprite rendering with facing direction in frontend/src/render/spriteRenderer.ts
+- [X] T048 [P] [US1] Build the MatchBoard component that mounts and sizes the canvas in frontend/src/components/MatchBoard.tsx
+- [X] T049 [P] [US1] Build the HUD components for score, match timer, and lives in frontend/src/components/Hud.tsx
+- [X] T050 [P] [US1] Build the results screen rendering MatchEnded winner and reason in frontend/src/components/ResultsScreen.tsx
+- [X] T051 [US1] Implement keyboard input capture and direction-change forwarding to SendInput in frontend/src/hooks/useKeyboardInput.ts
 
 **Checkpoint**: A full match is playable end-to-end by two browsers and always reaches a definitive outcome — MVP complete
 
