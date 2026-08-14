@@ -202,7 +202,7 @@ debuff applies and clears (quickstart.md scenario 3)
 - [X] T087 [P] Add frontend unit tests for input mapping and canvas draw-loop state selection in frontend/tests/unit/render.test.ts
 - [X] T088 Review all Hub input paths for reject-don't-clamp validation coverage in backend/src/MatchServer/Hubs/MatchHub.cs (Constitution Fair-Play requirement)
 - [X] T089 [P] Write the developer README covering setup, codegen, and the three test layers in README.md
-- [ ] T090 Run the full quickstart.md validation guide manually and confirm every scenario matches its spec citation
+- [X] T090 Run the full quickstart.md validation guide manually and confirm every scenario matches its spec citation
 
 ---
 

@@ -148,7 +148,10 @@ function firstStepToward(
  */
 export async function eatAPowerPellet(runner: Page, hunter: Page): Promise<boolean> {
   const overlay = hunter.getByTestId('frightened-overlay');
-  const deadline = Date.now() + 45_000;
+  // Generous because the whole suite shares one backend: under load each DOM read is
+  // slower, so fewer navigation steps fit in a given wall-clock budget. The test timeout
+  // is 180s and the assertions after this take ~15s, so 90s still leaves headroom.
+  const deadline = Date.now() + 90_000;
 
   // Hold the current heading the way a player does, swapping keys only when the route turns.
   // Holding matters: Pac-Man travels continuously, so re-solving and re-pressing every cycle
