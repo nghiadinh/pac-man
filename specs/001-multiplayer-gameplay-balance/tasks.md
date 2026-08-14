@@ -54,22 +54,22 @@ connection — that every user story builds on
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T010 [P] Create the MatchState POCO in backend/src/MatchServer/State/MatchState.cs per data-model.md (matchId, status, elapsedMs, pacman, ghost, map, frightened, scoreChain, outcome)
-- [ ] T011 [P] Create the PlayerState POCO in backend/src/MatchServer/State/PlayerState.cs per data-model.md (connectionId, role, x, y, facing, speedMultiplier, livesRemaining, ghostSubState, respawnReadyAtMs, connected, score)
-- [ ] T012 [P] Create the MapState, Pellet, and PowerPellet POCOs in backend/src/MatchServer/State/MapState.cs per data-model.md, including totalPelletCount
-- [ ] T013 [P] Create the FrightenedState and Outcome types plus the Role, MatchStatus, GhostSubState, and ScoreEventType enums in backend/src/MatchServer/State/MatchEnums.cs and backend/src/MatchServer/State/FrightenedState.cs
-- [ ] T014 Define the single fixed map layout (walls, pellet and power-pellet positions, ghost house location) in backend/src/MatchServer/State/FixedMap.cs per FR-022
-- [ ] T015 Create the MatchManager in backend/src/MatchServer/Engine/MatchManager.cs holding all in-memory active matches keyed by match id, with create/lookup/dispose
-- [ ] T016 Create the MatchHub skeleton in backend/src/MatchServer/Hubs/MatchHub.cs implementing JoinMatch() with first-joiner-is-Runner role assignment and SignalR Group membership per contracts/match-room-protocol.md
-- [ ] T017 Implement the ~30Hz authoritative tick loop in backend/src/MatchServer/Engine/MatchLoopService.cs as a hosted service that advances every active match's elapsedMs and invokes the rule pipeline in a fixed, deterministic order (Constitution Principle II)
-- [ ] T018 Define MatchStateDto and the per-recipient projection seam in backend/src/MatchServer/Hubs/MatchStateDto.cs so each connection can receive its own filtered payload (filtering logic itself lands in US3)
-- [ ] T019 Implement the SendInput(direction) Hub method in backend/src/MatchServer/Hubs/MatchHub.cs with server-side validation that rejects and logs any value outside Up/Down/Left/Right/None rather than clamping it (Constitution Fair-Play requirement)
-- [ ] T020 Add structured per-match logging in backend/src/MatchServer/Engine/MatchLogger.cs recording every tick's authoritative decisions so outcomes are reproducible for dispute review (Constitution Fair-Play requirement)
-- [ ] T021 Wire the ASP.NET Core bootstrap in backend/src/MatchServer/Program.cs — SignalR service registration, the /hubs/match endpoint, CORS for the Vite dev origin, and MatchLoopService registration
-- [ ] T022 [P] Implement the SignalR client wrapper in frontend/src/net/matchConnection.ts (connect, invoke JoinMatch/SendInput, subscribe to StateUpdate/SonarPulse/ScoreEvent/MatchEnded)
-- [ ] T023 [P] Implement the useMatchConnection and useMatchState hooks in frontend/src/hooks/useMatchConnection.ts and frontend/src/hooks/useMatchState.ts, exposing the latest server state to React while holding the per-frame snapshot in a ref for the canvas loop
-- [ ] T024 [P] Create the React app shell in frontend/src/App.tsx and frontend/src/main.tsx with the JoinScreen component in frontend/src/components/JoinScreen.tsx
-- [ ] T025 [P] Create the global black theme in frontend/src/styles/theme.css — black (#000) page/body background and matching canvas clear color, light-on-dark text — per plan.md "Visual Presentation"
+- [X] T010 [P] Create the MatchState POCO in backend/src/MatchServer/State/MatchState.cs per data-model.md (matchId, status, elapsedMs, pacman, ghost, map, frightened, scoreChain, outcome)
+- [X] T011 [P] Create the PlayerState POCO in backend/src/MatchServer/State/PlayerState.cs per data-model.md (connectionId, role, x, y, facing, speedMultiplier, livesRemaining, ghostSubState, respawnReadyAtMs, connected, score)
+- [X] T012 [P] Create the MapState, Pellet, and PowerPellet POCOs in backend/src/MatchServer/State/MapState.cs per data-model.md, including totalPelletCount
+- [X] T013 [P] Create the FrightenedState and Outcome types plus the Role, MatchStatus, GhostSubState, and ScoreEventType enums in backend/src/MatchServer/State/MatchEnums.cs and backend/src/MatchServer/State/FrightenedState.cs
+- [X] T014 Define the single fixed map layout (walls, pellet and power-pellet positions, ghost house location) in backend/src/MatchServer/State/FixedMap.cs per FR-022
+- [X] T015 Create the MatchManager in backend/src/MatchServer/Engine/MatchManager.cs holding all in-memory active matches keyed by match id, with create/lookup/dispose
+- [X] T016 Create the MatchHub skeleton in backend/src/MatchServer/Hubs/MatchHub.cs implementing JoinMatch() with first-joiner-is-Runner role assignment and SignalR Group membership per contracts/match-room-protocol.md
+- [X] T017 Implement the ~30Hz authoritative tick loop in backend/src/MatchServer/Engine/MatchLoopService.cs as a hosted service that advances every active match's elapsedMs and invokes the rule pipeline in a fixed, deterministic order (Constitution Principle II)
+- [X] T018 Define MatchStateDto and the per-recipient projection seam in backend/src/MatchServer/Hubs/MatchStateDto.cs so each connection can receive its own filtered payload (filtering logic itself lands in US3)
+- [X] T019 Implement the SendInput(direction) Hub method in backend/src/MatchServer/Hubs/MatchHub.cs with server-side validation that rejects and logs any value outside Up/Down/Left/Right/None rather than clamping it (Constitution Fair-Play requirement)
+- [X] T020 Add structured per-match logging in backend/src/MatchServer/Engine/MatchLogger.cs recording every tick's authoritative decisions so outcomes are reproducible for dispute review (Constitution Fair-Play requirement)
+- [X] T021 Wire the ASP.NET Core bootstrap in backend/src/MatchServer/Program.cs — SignalR service registration, the /hubs/match endpoint, CORS for the Vite dev origin, and MatchLoopService registration
+- [X] T022 [P] Implement the SignalR client wrapper in frontend/src/net/matchConnection.ts (connect, invoke JoinMatch/SendInput, subscribe to StateUpdate/SonarPulse/ScoreEvent/MatchEnded)
+- [X] T023 [P] Implement the useMatchConnection and useMatchState hooks in frontend/src/hooks/useMatchConnection.ts and frontend/src/hooks/useMatchState.ts, exposing the latest server state to React while holding the per-frame snapshot in a ref for the canvas loop
+- [X] T024 [P] Create the React app shell in frontend/src/App.tsx and frontend/src/main.tsx with the JoinScreen component in frontend/src/components/JoinScreen.tsx
+- [X] T025 [P] Create the global black theme in frontend/src/styles/theme.css — black (#000) page/body background and matching canvas clear color, light-on-dark text — per plan.md "Visual Presentation"
 
 **Checkpoint**: Two clients can connect, be assigned roles, and receive ticking authoritative state — user story implementation can now begin
 

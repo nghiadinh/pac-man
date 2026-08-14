@@ -1,0 +1,129 @@
+/*
+ * Global theme. The page is black end to end (plan.md "Visual Presentation"): the body and the
+ * canvas share one background so the maze and the surrounding page read as a single field with
+ * no seam at the canvas edge. Black also gives maximum contrast for the elements the spec
+ * requires to stay legible - pellets, the flashing frightened ghost (FR-008), the sonar
+ * indicator (FR-011), and the speed-boost indicator (FR-013).
+ */
+
+:root {
+  --bg: #000000;
+  --fg: #ffffff;
+  --muted: #8b8b9a;
+  --wall: #1a1aa8;
+  --pellet: #ffb897;
+  --power-pellet: #ffffff;
+  --pacman: #ffe600;
+  --ghost: #ff2b2b;
+  --ghost-frightened: #2b6bff;
+  --ghost-frightened-flash: #ffffff;
+  --ghost-eyes: #d0d0ff;
+  --accent: #ffe600;
+  --danger: #ff4d4d;
+
+  color-scheme: dark;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 100%;
+  background: var(--bg);
+}
+
+/* The canvas paints its own black clear colour; this keeps the seam invisible if it is letterboxed. */
+canvas {
+  background: var(--bg);
+  display: block;
+  image-rendering: pixelated;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.screen h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.screen p {
+  margin: 0;
+  color: var(--muted);
+  max-width: 42ch;
+  line-height: 1.5;
+}
+
+.button {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.button:hover {
+  filter: brightness(1.1);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.role-badge--runner {
+  background: var(--pacman);
+  color: #000;
+}
+
+.role-badge--hunter {
+  background: var(--ghost);
+  color: #fff;
+}
+
+.error {
+  color: var(--danger);
+}
