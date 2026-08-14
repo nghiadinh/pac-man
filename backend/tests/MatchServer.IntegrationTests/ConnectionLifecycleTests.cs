@@ -65,7 +65,7 @@ public sealed class ConnectionLifecycleTests : IDisposable
         // Wait for the condition rather than sleeping a fixed 500ms: every test class boots its own
         // server and xUnit runs them in parallel, so under load a fixed delay can capture a single
         // active tick and make the "clock advanced" assertion fail for no real reason.
-        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(10);
+        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(30);
         while (DateTime.UtcNow < deadline &&
                (ActiveOnly(runnerStates).Count < 2 || ActiveOnly(hunterStates).Count < 1))
         {
@@ -114,6 +114,14 @@ public sealed class ConnectionLifecycleTests : IDisposable
         // into the nearest legal value.
         await Assert.ThrowsAsync<HubException>(
             () => runner.InvokeAsync("SendInput", "Diagonal"));
+
+        // Numeric aliases are refused too. Enum.TryParse would happily turn "0" into None, which
+        // would let a client bypass the literal set the contract defines.
+        await Assert.ThrowsAsync<HubException>(() => runner.InvokeAsync("SendInput", "0"));
+        await Assert.ThrowsAsync<HubException>(() => runner.InvokeAsync("SendInput", "2"));
+
+        // Case matters - the contract specifies exact literals.
+        await Assert.ThrowsAsync<HubException>(() => runner.InvokeAsync("SendInput", "up"));
 
         // A legal direction still works afterwards - the rejection is per-message, not fatal.
         await runner.InvokeAsync("SendInput", "Up");

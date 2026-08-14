@@ -19,21 +19,33 @@ const FACING_ANGLE: Record<Direction, number> = {
   None: 0,
 };
 
-/** A player whose position the server withheld under fog of war (FR-011) is not drawable. */
-function isHidden(player: PlayerDto): boolean {
-  return Number.isNaN(player.x) || Number.isNaN(player.y);
+/** A player with a position the server actually sent. */
+type LocatedPlayer = PlayerDto & { x: number; y: number };
+
+/**
+ * Narrows to a drawable player.
+ *
+ * A player fogged out under FR-011 arrives with null coordinates - the server omits them rather
+ * than sending a sentinel - so there is genuinely nothing to draw for them.
+ */
+function isLocated(player: PlayerDto): player is LocatedPlayer {
+  return player.x !== null && player.y !== null;
 }
 
 export function drawPlayers(ctx: CanvasRenderingContext2D, state: MatchStateDto): void {
-  if (state.pacman && !isHidden(state.pacman)) {
+  if (state.pacman && isLocated(state.pacman)) {
     drawPacman(ctx, state.pacman, state.elapsedMs);
   }
-  if (state.ghost && !isHidden(state.ghost)) {
+  if (state.ghost && isLocated(state.ghost)) {
     drawGhost(ctx, state.ghost, state);
   }
 }
 
-function drawPacman(ctx: CanvasRenderingContext2D, pacman: PlayerDto, elapsedMs: number): void {
+function drawPacman(
+  ctx: CanvasRenderingContext2D,
+  pacman: LocatedPlayer,
+  elapsedMs: number,
+): void {
   const cx = centerOf(pacman.x);
   const cy = centerOf(pacman.y);
   const radius = TILE_SIZE * 0.45;
@@ -51,7 +63,11 @@ function drawPacman(ctx: CanvasRenderingContext2D, pacman: PlayerDto, elapsedMs:
   ctx.fill();
 }
 
-function drawGhost(ctx: CanvasRenderingContext2D, ghost: PlayerDto, state: MatchStateDto): void {
+function drawGhost(
+  ctx: CanvasRenderingContext2D,
+  ghost: LocatedPlayer,
+  state: MatchStateDto,
+): void {
   const cx = centerOf(ghost.x);
   const cy = centerOf(ghost.y);
   const radius = TILE_SIZE * 0.45;
@@ -84,7 +100,7 @@ function drawGhost(ctx: CanvasRenderingContext2D, ghost: PlayerDto, state: Match
  * FR-008: the frightened ghost is blue and flashes blue/white. The flash accelerates over the
  * final two seconds so the Hunter can feel the window closing without reading a number.
  */
-function bodyColor(ghost: PlayerDto, state: MatchStateDto): string {
+function bodyColor(ghost: LocatedPlayer, state: MatchStateDto): string {
   if (ghost.ghostSubState !== 'Frightened' || !state.frightened) {
     return COLORS.ghost;
   }

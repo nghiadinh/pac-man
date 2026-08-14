@@ -1,3 +1,4 @@
+using MatchServer.Generated;
 using MatchServer.State;
 
 namespace MatchServer.Engine;
@@ -64,6 +65,34 @@ public sealed class MatchLogger(ILogger<MatchLogger> logger)
             "(pacman {PacmanScore} / ghost {GhostScore}, {ClearedPct:P1} pellets cleared)",
             matchId, elapsedMs, outcome.Winner, outcome.Reason,
             outcome.FinalPacmanScore, outcome.FinalGhostScore, clearedFraction);
+
+    /// <summary>
+    /// Records how long the authoritative loop actually took to apply and broadcast a tick.
+    /// </summary>
+    /// <remarks>
+    /// SC-006 budgets 100ms round-trip from input to effect. Server-side processing is only part
+    /// of that (network transit is the rest), so this logs at Warning once the server alone eats
+    /// more than half the budget - the point at which the remaining headroom for the network is
+    /// no longer credible. The constitution requires this target to be revisited if measured
+    /// latency exceeds it, which needs the measurement to exist in the first place.
+    /// </remarks>
+    public void TickLatency(string matchId, double elapsedMs)
+    {
+        const double BudgetMs = BalanceConstants.Network.MaxInputLatencyMs;
+
+        if (elapsedMs > BudgetMs / 2)
+        {
+            logger.LogWarning(
+                "match {MatchId}: tick took {ElapsedMs:F1}ms, over half the {BudgetMs}ms " +
+                "input-to-effect budget (SC-006)",
+                matchId, elapsedMs, BudgetMs);
+        }
+        else
+        {
+            logger.LogDebug(
+                "match {MatchId}: tick {ElapsedMs:F1}ms", matchId, elapsedMs);
+        }
+    }
 
     public void PlayerDisconnected(string matchId, Role role, string connectionId) =>
         logger.LogInformation(

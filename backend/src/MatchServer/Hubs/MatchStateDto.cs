@@ -22,10 +22,18 @@ public sealed record MatchStateDto(
     int ScoreChain,
     OutcomeDto? Outcome);
 
+/// <summary>
+/// A player as one recipient is allowed to see them.
+/// </summary>
+/// <remarks>
+/// <see cref="X"/> and <see cref="Y"/> are nullable because a fogged position is OMITTED, not
+/// obscured (FR-011). They must stay nullable rather than using a sentinel like NaN: System.Text.Json
+/// refuses to serialize NaN at all, which silently breaks the entire state broadcast.
+/// </remarks>
 public sealed record PlayerDto(
     string Role,
-    double X,
-    double Y,
+    double? X,
+    double? Y,
     string Facing,
     double SpeedMultiplier,
     int LivesRemaining,
@@ -100,8 +108,8 @@ public static class MatchStateProjection
             // they are on the HUD for both players and leak nothing about location.
             return new PlayerDto(
                 player.Role.ToString(),
-                double.NaN,
-                double.NaN,
+                null,
+                null,
                 Direction.None.ToString(),
                 0,
                 player.LivesRemaining,

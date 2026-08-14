@@ -57,6 +57,29 @@ public static class CollisionRules
             : EliminatePacman(match, pacman, ghost);
     }
 
+    /// <summary>
+    /// Moves Pac-Man back to the spawn tile after an elimination.
+    /// </summary>
+    /// <remarks>
+    /// Called at the END of the tick, after pickups, so that a Power Pellet shared with the
+    /// elimination tile is still consumed (FR-021). Any Frightened window created by that pickup
+    /// therefore effectively begins from the respawned position, which is exactly what the spec
+    /// describes.
+    /// </remarks>
+    public static void RespawnRunner(MatchState match)
+    {
+        if (match.Pacman is not { } pacman)
+        {
+            return;
+        }
+
+        pacman.X = match.Map.RunnerSpawn.X;
+        pacman.Y = match.Map.RunnerSpawn.Y;
+        pacman.Facing = Direction.None;
+        pacman.DesiredDirection = Direction.None;
+        pacman.CorneringPenaltyActive = false;
+    }
+
     /// <summary>FR-004: matching 0.8x0.8 tile boxes, so contact is symmetric.</summary>
     public static bool AreTouching(PlayerState a, PlayerState b)
     {
@@ -71,11 +94,10 @@ public static class CollisionRules
 
         var scoreEvent = ScoringRules.Award(match, ScoreEventType.PacmanEliminated);
 
-        // Reset Pac-Man to its spawn tile so the next life starts from a known position.
-        pacman.X = match.Map.RunnerSpawn.X;
-        pacman.Y = match.Map.RunnerSpawn.Y;
-        pacman.Facing = Direction.None;
-        pacman.DesiredDirection = Direction.None;
+        // NOTE: Pac-Man is deliberately NOT moved here. FR-021 requires that a Power Pellet on the
+        // same tile is "still consumed" on this tick, and the pickup phase runs after this one -
+        // teleporting to spawn now would carry him off the pellet before it could be eaten.
+        // The move is applied by RespawnRunner once pickups have resolved.
 
         // FR-003: the Ghost sits out 5 seconds, which is what stops it camping the respawn tile
         // and instantly re-killing.

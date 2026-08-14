@@ -133,26 +133,26 @@ vision and anti-camping rules (quickstart.md scenario 2)
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T052 [P] [US2] Unit tests asserting an 8.0s Frightened window and that a second pickup resets rather than stacks the timer (FR-005) in backend/tests/MatchServer.UnitTests/FrightenedStateTests.cs
-- [ ] T053 [P] [US2] Unit tests for the 70% frightened speed and the 3.0s directional input inversion (FR-006, FR-007) in backend/tests/MatchServer.UnitTests/FrightenedMovementTests.cs
-- [ ] T054 [P] [US2] Unit tests for the 200/400/800/1600 chain progression and its reset between chains (FR-009) in backend/tests/MatchServer.UnitTests/ChainScoringTests.cs
-- [ ] T055 [P] [US2] Unit test for the FR-021 same-tick resolution order — elimination applies first, the Power Pellet is still consumed, and the Frightened window begins only after respawn — in backend/tests/MatchServer.UnitTests/SimultaneousCollisionTests.cs
-- [ ] T056 [P] [US2] Unit test asserting the Ghost cannot be caught again while already in EyesOnly or Respawning sub-state and must complete its return-and-lockout sequence before becoming a valid target, in backend/tests/MatchServer.UnitTests/GhostStateMachineTests.cs
-- [ ] T057 [P] [US2] Integration test walking the full Normal → Frightened → EyesOnly → Respawning → Normal ghost lifecycle in backend/tests/MatchServer.IntegrationTests/FrightenedLifecycleTests.cs
-- [ ] T058 [P] [US2] Playwright end-to-end spec covering quickstart.md scenario 2 in e2e/tests/frightened-state.spec.ts
+- [X] T052 [P] [US2] Unit tests asserting an 8.0s Frightened window and that a second pickup resets rather than stacks the timer (FR-005) in backend/tests/MatchServer.UnitTests/FrightenedStateTests.cs
+- [X] T053 [P] [US2] Unit tests for the 70% frightened speed and the 3.0s directional input inversion (FR-006, FR-007) in backend/tests/MatchServer.UnitTests/FrightenedMovementTests.cs
+- [X] T054 [P] [US2] Unit tests for the 200/400/800/1600 chain progression and its reset between chains (FR-009) in backend/tests/MatchServer.UnitTests/ChainScoringTests.cs
+- [X] T055 [P] [US2] Unit test for the FR-021 same-tick resolution order — elimination applies first, the Power Pellet is still consumed, and the Frightened window begins only after respawn — in backend/tests/MatchServer.UnitTests/SimultaneousCollisionTests.cs
+- [X] T056 [P] [US2] Unit test asserting the Ghost cannot be caught again while already in EyesOnly or Respawning sub-state and must complete its return-and-lockout sequence before becoming a valid target, in backend/tests/MatchServer.UnitTests/GhostStateMachineTests.cs
+- [X] T057 [P] [US2] Integration test walking the full Normal → Frightened → EyesOnly → Respawning → Normal ghost lifecycle in backend/tests/MatchServer.IntegrationTests/FrightenedLifecycleTests.cs
+- [X] T058 [P] [US2] Playwright end-to-end spec covering quickstart.md scenario 2 in e2e/tests/frightened-state.spec.ts
 
 ### Implementation for User Story 2
 
-- [ ] T059 [US2] Implement Power Pellet consumption creating or resetting FrightenedState in backend/src/MatchServer/Engine/PelletRules.cs (FR-005)
-- [ ] T060 [US2] Apply the 70% frightened speed override in backend/src/MatchServer/Engine/MovementRules.cs (FR-006)
-- [ ] T061 [US2] Apply server-side directional input inversion during the first 3.0s of each Frightened window in backend/src/MatchServer/Engine/MovementRules.cs (FR-007)
-- [ ] T062 [US2] Implement the GhostSubState machine (Normal/Frightened/EyesOnly/Respawning) in backend/src/MatchServer/Engine/GhostStateMachine.cs per data-model.md transitions
-- [ ] T063 [US2] Implement eyes-only 150% return-to-ghost-house movement in backend/src/MatchServer/Engine/MovementRules.cs (FR-009)
-- [ ] T064 [US2] Implement the 5.0-second Ghost House lockout before re-release in backend/src/MatchServer/Engine/GhostStateMachine.cs (FR-009)
-- [ ] T065 [US2] Implement escalating chain scoring against MatchState.scoreChain in backend/src/MatchServer/Engine/ScoringRules.cs (FR-009)
-- [ ] T066 [US2] Implement the FR-021 fixed evaluation order (elimination before pickup) in backend/src/MatchServer/Engine/CollisionRules.cs
-- [ ] T067 [P] [US2] Render the flashing blue/white frightened ghost sprite in frontend/src/render/spriteRenderer.ts (FR-008)
-- [ ] T068 [P] [US2] Build the frightened blue-pulse overlay and countdown timer for the Ghost client in frontend/src/components/FrightenedOverlay.tsx (FR-008)
+- [X] T059 [US2] Implement Power Pellet consumption creating or resetting FrightenedState in backend/src/MatchServer/Engine/PelletRules.cs (FR-005)
+- [X] T060 [US2] Apply the 70% frightened speed override in backend/src/MatchServer/Engine/MovementRules.cs (FR-006)
+- [X] T061 [US2] Apply server-side directional input inversion during the first 3.0s of each Frightened window in backend/src/MatchServer/Engine/MovementRules.cs (FR-007)
+- [X] T062 [US2] Implement the GhostSubState machine (Normal/Frightened/EyesOnly/Respawning) in backend/src/MatchServer/Engine/GhostStateMachine.cs per data-model.md transitions
+- [X] T063 [US2] Implement eyes-only 150% return-to-ghost-house movement in backend/src/MatchServer/Engine/MovementRules.cs (FR-009)
+- [X] T064 [US2] Implement the 5.0-second Ghost House lockout before re-release in backend/src/MatchServer/Engine/GhostStateMachine.cs (FR-009)
+- [X] T065 [US2] Implement escalating chain scoring against MatchState.scoreChain in backend/src/MatchServer/Engine/ScoringRules.cs (FR-009)
+- [X] T066 [US2] Implement the FR-021 fixed evaluation order (elimination before pickup) in backend/src/MatchServer/Engine/CollisionRules.cs
+- [X] T067 [P] [US2] Render the flashing blue/white frightened ghost sprite in frontend/src/render/spriteRenderer.ts (FR-008)
+- [X] T068 [P] [US2] Build the frightened blue-pulse overlay and countdown timer for the Ghost client in frontend/src/components/FrightenedOverlay.tsx (FR-008)
 
 **Checkpoint**: Both User Story 1 and User Story 2 work independently
 
@@ -169,22 +169,22 @@ debuff applies and clears (quickstart.md scenario 3)
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T069 [P] [US3] Unit tests for the 6-tile radius and unobstructed line-of-sight visibility rules (FR-011) in backend/tests/MatchServer.UnitTests/VisionRulesTests.cs
-- [ ] T070 [P] [US3] Unit tests asserting the 4.0s sonar cadence resolves the correct quadrant and never exposes exact coordinates (FR-011) in backend/tests/MatchServer.UnitTests/SonarRulesTests.cs
-- [ ] T071 [P] [US3] Unit tests for the 3-tile/5.0s anti-camping trigger, the 15% penalty to 80% net speed, clearing on zone exit, and the camp-timer reset whenever Pac-Man becomes visible (FR-012), asserting the debuff becomes observable in the Ghost's state within 1.0 second of the threshold being crossed (SC-004), in backend/tests/MatchServer.UnitTests/AntiCampingRulesTests.cs
-- [ ] T072 [P] [US3] Integration test asserting the Hunter's connection never receives the Runner's true position on ticks where the Runner is not visible, and that the Runner is never fog-restricted (FR-010, FR-011) in backend/tests/MatchServer.IntegrationTests/FogOfWarFilteringTests.cs
-- [ ] T073 [P] [US3] Playwright end-to-end spec covering quickstart.md scenario 3 in e2e/tests/vision-and-camping.spec.ts
+- [X] T069 [P] [US3] Unit tests for the 6-tile radius and unobstructed line-of-sight visibility rules (FR-011) in backend/tests/MatchServer.UnitTests/VisionRulesTests.cs
+- [X] T070 [P] [US3] Unit tests asserting the 4.0s sonar cadence resolves the correct quadrant and never exposes exact coordinates (FR-011) in backend/tests/MatchServer.UnitTests/SonarRulesTests.cs
+- [X] T071 [P] [US3] Unit tests for the 3-tile/5.0s anti-camping trigger, the 15% penalty to 80% net speed, clearing on zone exit, and the camp-timer reset whenever Pac-Man becomes visible (FR-012), asserting the debuff becomes observable in the Ghost's state within 1.0 second of the threshold being crossed (SC-004), in backend/tests/MatchServer.UnitTests/AntiCampingRulesTests.cs
+- [X] T072 [P] [US3] Integration test asserting the Hunter's connection never receives the Runner's true position on ticks where the Runner is not visible, and that the Runner is never fog-restricted (FR-010, FR-011) in backend/tests/MatchServer.IntegrationTests/FogOfWarFilteringTests.cs
+- [X] T073 [P] [US3] Playwright end-to-end spec covering quickstart.md scenario 3 in e2e/tests/vision-and-camping.spec.ts
 
 ### Implementation for User Story 3
 
-- [ ] T074 [P] [US3] Implement VisionRules in backend/src/MatchServer/Engine/VisionRules.cs — 6-tile radius plus corridor line-of-sight resolution (FR-011)
-- [ ] T075 [P] [US3] Implement AntiCampingRules in backend/src/MatchServer/Engine/AntiCampingRules.cs — per-power-pellet camp timers that reset to zero whenever Pac-Man is visible to the Ghost per FR-011, the 15% debuff, and clearing on exit or collection (FR-012)
-- [ ] T076 [US3] Implement per-recipient state filtering in backend/src/MatchServer/Hubs/MatchStateDto.cs so the Hunter's payload omits the Runner's position whenever VisionRules says it is not visible, while the Runner always receives full visibility (FR-010, FR-011, Constitution Principle III)
-- [ ] T077 [US3] Emit SonarPulse quadrant messages to the Hunter connection every 4.0s while the Runner is outside direct visibility, resolving the quadrant map-relative (NE/NW/SE/SW split at the map's midlines, never Hunter-relative), in backend/src/MatchServer/Hubs/MatchHub.cs (FR-011)
-- [ ] T078 [US3] Apply the anti-camping speed debuff to the Ghost's effective speed in backend/src/MatchServer/Engine/MovementRules.cs (FR-012)
-- [ ] T079 [P] [US3] Render the Hunter's fog-of-war view — draw only what the filtered state contains — in frontend/src/render/boardRenderer.ts
-- [ ] T080 [P] [US3] Build the sonar pulse HUD indicator in frontend/src/components/SonarIndicator.tsx (FR-011)
-- [ ] T081 [P] [US3] Build the Pac-Man speed-boost indicator shown while the anti-camping debuff is active in frontend/src/components/SpeedBoostIndicator.tsx (FR-013)
+- [X] T074 [P] [US3] Implement VisionRules in backend/src/MatchServer/Engine/VisionRules.cs — 6-tile radius plus corridor line-of-sight resolution (FR-011)
+- [X] T075 [P] [US3] Implement AntiCampingRules in backend/src/MatchServer/Engine/AntiCampingRules.cs — per-power-pellet camp timers that reset to zero whenever Pac-Man is visible to the Ghost per FR-011, the 15% debuff, and clearing on exit or collection (FR-012)
+- [X] T076 [US3] Implement per-recipient state filtering in backend/src/MatchServer/Hubs/MatchStateDto.cs so the Hunter's payload omits the Runner's position whenever VisionRules says it is not visible, while the Runner always receives full visibility (FR-010, FR-011, Constitution Principle III)
+- [X] T077 [US3] Emit SonarPulse quadrant messages to the Hunter connection every 4.0s while the Runner is outside direct visibility, resolving the quadrant map-relative (NE/NW/SE/SW split at the map's midlines, never Hunter-relative), in backend/src/MatchServer/Hubs/MatchHub.cs (FR-011)
+- [X] T078 [US3] Apply the anti-camping speed debuff to the Ghost's effective speed in backend/src/MatchServer/Engine/MovementRules.cs (FR-012)
+- [X] T079 [P] [US3] Render the Hunter's fog-of-war view — draw only what the filtered state contains — in frontend/src/render/boardRenderer.ts
+- [X] T080 [P] [US3] Build the sonar pulse HUD indicator in frontend/src/components/SonarIndicator.tsx (FR-011)
+- [X] T081 [P] [US3] Build the Pac-Man speed-boost indicator shown while the anti-camping debuff is active in frontend/src/components/SpeedBoostIndicator.tsx (FR-013)
 
 **Checkpoint**: All three user stories are independently functional
 
@@ -194,14 +194,14 @@ debuff applies and clears (quickstart.md scenario 3)
 
 **Purpose**: Verification against measurable success criteria, plus cleanup
 
-- [ ] T082 [P] Playwright end-to-end spec covering the clarification-session edge cases from quickstart.md scenario 4 (70% boundary, exact tie, FR-021 simultaneity, disconnect forfeit, and the timer-expiry vs. final-pellet race), plus an assertion that a ScoreEvent is reflected in both clients' HUDs within 1.0 second with identical values (SC-005), in e2e/tests/edge-cases.spec.ts
-- [ ] T083 Measure round-trip input-to-effect latency against the ≤100ms budget and record the result, adding the instrumentation in backend/src/MatchServer/Engine/MatchLogger.cs (SC-006)
+- [X] T082 [P] Playwright end-to-end spec covering the clarification-session edge cases from quickstart.md scenario 4 (70% boundary, exact tie, FR-021 simultaneity, disconnect forfeit, and the timer-expiry vs. final-pellet race), plus an assertion that a ScoreEvent is reflected in both clients' HUDs within 1.0 second with identical values (SC-005), in e2e/tests/edge-cases.spec.ts
+- [X] T083 Measure round-trip input-to-effect latency against the ≤100ms budget and record the result, adding the instrumentation in backend/src/MatchServer/Engine/MatchLogger.cs (SC-006)
 - [ ] T084 Run playtest matches between similarly-skilled players and record the role win-rate split against the ~60/40 balance target, documenting findings in specs/001-multiplayer-gameplay-balance/playtest-results.md (SC-003)
-- [ ] T085 [P] Wire shared/codegen/generate.js into the backend and frontend pre-build steps so generated constants can never go stale (Constitution Principle I)
-- [ ] T086 [P] Add frontend component tests for the HUD, sonar indicator, and speed-boost indicator in frontend/tests/unit/components.test.tsx
-- [ ] T087 [P] Add frontend unit tests for input mapping and canvas draw-loop state selection in frontend/tests/unit/render.test.ts
-- [ ] T088 Review all Hub input paths for reject-don't-clamp validation coverage in backend/src/MatchServer/Hubs/MatchHub.cs (Constitution Fair-Play requirement)
-- [ ] T089 [P] Write the developer README covering setup, codegen, and the three test layers in README.md
+- [X] T085 [P] Wire shared/codegen/generate.js into the backend and frontend pre-build steps so generated constants can never go stale (Constitution Principle I)
+- [X] T086 [P] Add frontend component tests for the HUD, sonar indicator, and speed-boost indicator in frontend/tests/unit/components.test.tsx
+- [X] T087 [P] Add frontend unit tests for input mapping and canvas draw-loop state selection in frontend/tests/unit/render.test.ts
+- [X] T088 Review all Hub input paths for reject-don't-clamp validation coverage in backend/src/MatchServer/Hubs/MatchHub.cs (Constitution Fair-Play requirement)
+- [X] T089 [P] Write the developer README covering setup, codegen, and the three test layers in README.md
 - [ ] T090 Run the full quickstart.md validation guide manually and confirm every scenario matches its spec citation
 
 ---

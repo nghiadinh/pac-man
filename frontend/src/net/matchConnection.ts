@@ -23,9 +23,9 @@ export interface MatchStateDto {
 
 export interface PlayerDto {
   role: 'Runner' | 'Hunter';
-  /** NaN when the server withheld position under fog of war (FR-011). */
-  x: number;
-  y: number;
+  /** null when the server withheld the position under fog of war (FR-011). */
+  x: number | null;
+  y: number | null;
   facing: Direction;
   speedMultiplier: number;
   livesRemaining: number;

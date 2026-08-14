@@ -1,3 +1,4 @@
+import { balanceConstants } from '../generated/balanceConstants';
 import type { MatchStateDto } from '../net/matchConnection';
 
 export const TILE_SIZE = 20;
@@ -24,6 +25,36 @@ export function drawBoard(ctx: CanvasRenderingContext2D, state: MatchStateDto): 
 
   drawWalls(ctx, map.rows);
   drawPellets(ctx, state);
+}
+
+/**
+ * Dims everything outside the Hunter's sight (FR-011).
+ *
+ * Purely cosmetic: the Runner's position is already absent from the Hunter's payload, so this
+ * cannot reveal or conceal anything the server did not already decide. It exists so the Hunter
+ * can SEE the boundary of their own vision rather than having to infer it — drawn over the maze
+ * so the layout stays readable for navigation.
+ */
+export function drawFogOfWar(ctx: CanvasRenderingContext2D, state: MatchStateDto): void {
+  const { map, ghost } = state;
+  if (!ghost || ghost.x === null || ghost.y === null) {
+    return;
+  }
+
+  const cx = centerOf(ghost.x);
+  const cy = centerOf(ghost.y);
+  const radius = visionRadiusPx();
+
+  const gradient = ctx.createRadialGradient(cx, cy, radius * 0.6, cx, cy, radius * 1.6);
+  gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.82)');
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, map.width * TILE_SIZE, map.height * TILE_SIZE);
+}
+
+function visionRadiusPx(): number {
+  return balanceConstants.vision.visionRadiusTiles * TILE_SIZE;
 }
 
 function drawWalls(ctx: CanvasRenderingContext2D, rows: string[]): void {

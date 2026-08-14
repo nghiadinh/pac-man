@@ -50,9 +50,9 @@ public static class MovementRules
             return speed;
         }
 
-        // FR-012: anti-camping is an additional 15% reduction. Movement only APPLIES the debuff;
-        // the rule that decides when to set CampDebuffActive is AntiCampingRules, added in US3.
-        if (match.Map.PowerPellets.Any(p => p.CampDebuffActive))
+        // FR-012: anti-camping is an additional 15% reduction (0.95 -> 0.8075 of base pace).
+        // Movement only APPLIES the debuff; AntiCampingRules decides when it is active.
+        if (AntiCampingRules.IsDebuffActive(match))
         {
             speed *= 1.0 - BalanceConstants.AntiCamping.CampSpeedPenalty;
         }
@@ -64,6 +64,29 @@ public static class MovementRules
         }
 
         return speed;
+    }
+
+    /// <summary>
+    /// Recomputes each player's reported speed from fully settled state.
+    /// </summary>
+    /// <remarks>
+    /// Called at the END of the tick. Movement runs early in the pipeline, but the sub-state that
+    /// determines speed can still change later in the same tick - eating a Power Pellet at the
+    /// pickup step frightens the ghost after movement has already recorded 0.95. Without this the
+    /// broadcast would briefly show "Frightened" alongside the normal-state speed, which is
+    /// visibly wrong on the HUD and confusing to anyone reading a state dump.
+    /// </remarks>
+    public static void RefreshSpeeds(MatchState match)
+    {
+        if (match.Pacman is { } pacman)
+        {
+            pacman.SpeedMultiplier = EffectiveSpeed(pacman, match);
+        }
+
+        if (match.Ghost is { } ghost)
+        {
+            ghost.SpeedMultiplier = EffectiveSpeed(ghost, match);
+        }
     }
 
     /// <summary>Advances both players by one tick.</summary>
@@ -140,6 +163,33 @@ public static class MovementRules
         }
     }
 
+    /// <summary>
+    /// Turns the player's stored intent into the direction actually applied this tick.
+    /// </summary>
+    /// <remarks>
+    /// FR-007: during the first 3.0s of a Frightened window the Hunter's directional input is
+    /// inverted. This happens HERE, server-side, at the moment the intent is consumed - the client
+    /// always sends the player's true intended direction. Inverting on the client would be
+    /// unenforceable, since a client could simply decline to do it (Constitution Principle III).
+    /// </remarks>
+    private static Direction ResolveIntent(PlayerState player, MatchState match)
+    {
+        var intent = player.DesiredDirection;
+
+        if (player.Role != Role.Hunter)
+        {
+            return intent;
+        }
+
+        // Eyes are server-steered on their way home, so the inversion must not touch them.
+        if (player.GhostSubState == GhostSubState.EyesOnly)
+        {
+            return intent;
+        }
+
+        return match.IsInversionActive ? intent.Invert() : intent;
+    }
+
     private static int TileOf(double coordinate) => (int)Math.Round(coordinate);
 
     private static bool IsAtCenter(PlayerState player) =>
@@ -185,7 +235,7 @@ public static class MovementRules
     /// </remarks>
     private static void TryTurn(PlayerState player, MatchState match)
     {
-        var desired = player.DesiredDirection;
+        var desired = ResolveIntent(player, match);
 
         if (desired == Direction.None || desired == player.Facing)
         {

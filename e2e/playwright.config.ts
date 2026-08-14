@@ -15,6 +15,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1,
+  // These drive real matches through real servers - a match takes seconds of wall clock,
+  // not milliseconds, so Playwright's 30s default is far too tight.
+  timeout: 180_000,
+  expect: { timeout: 20_000 },
   reporter: process.env.CI ? [['github'], ['html']] : [['list'], ['html', { open: 'never' }]],
 
   use: {
@@ -31,7 +35,7 @@ export default defineConfig({
       command: 'dotnet run --project ../backend/src/MatchServer --urls ' + BACKEND_URL,
       url: BACKEND_URL + '/health',
       reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
+      timeout: 180_000,
       stdout: 'pipe',
       stderr: 'pipe',
     },
@@ -39,7 +43,7 @@ export default defineConfig({
       command: 'npm run dev --prefix ../frontend',
       url: FRONTEND_URL,
       reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
+      timeout: 180_000,
       stdout: 'pipe',
       stderr: 'pipe',
     },

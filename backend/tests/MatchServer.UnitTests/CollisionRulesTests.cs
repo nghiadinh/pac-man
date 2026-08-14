@@ -73,15 +73,31 @@ public sealed class CollisionRulesTests
     }
 
     [Fact]
-    public void Elimination_respawns_pacman_at_its_spawn_tile()
+    public void Elimination_leaves_pacman_in_place_until_pickups_have_resolved()
     {
+        // FR-021: the respawn is deferred so a Power Pellet on the elimination tile is still
+        // consumed this tick. Resolve must not move Pac-Man.
         var match = Overlapping();
         match.Pacman().At(3, 2);
 
         CollisionRules.Resolve(match);
 
+        Assert.Equal(3, match.Pacman().X, precision: 6);
+        Assert.Equal(2, match.Pacman().Y, precision: 6);
+    }
+
+    [Fact]
+    public void Respawning_the_runner_returns_it_to_the_spawn_tile()
+    {
+        var match = Overlapping();
+        match.Pacman().At(3, 2).Heading(Direction.Right);
+
+        CollisionRules.Resolve(match);
+        CollisionRules.RespawnRunner(match);
+
         Assert.Equal(match.Map.RunnerSpawn.X, match.Pacman().X, precision: 6);
         Assert.Equal(match.Map.RunnerSpawn.Y, match.Pacman().Y, precision: 6);
+        Assert.Equal(Direction.None, match.Pacman().Facing);
     }
 
     [Fact]

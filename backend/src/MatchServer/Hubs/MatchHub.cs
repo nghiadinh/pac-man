@@ -47,7 +47,11 @@ public sealed class MatchHub(MatchManager matches, MatchLogger log) : Hub
             return;
         }
 
-        if (!Enum.TryParse<Direction>(direction, ignoreCase: false, out var parsed) ||
+        // Enum.TryParse also accepts NUMERIC strings, so "0" would quietly become Direction.None.
+        // The contract defines exactly five literals; anything else - including a numeric alias
+        // for one of them - is refused rather than interpreted.
+        if (!IsAllowedDirection(direction) ||
+            !Enum.TryParse<Direction>(direction, ignoreCase: false, out var parsed) ||
             !Enum.IsDefined(parsed))
         {
             log.InputRejected(handle.MatchId, Context.ConnectionId, direction);
@@ -123,6 +127,14 @@ public sealed class MatchHub(MatchManager matches, MatchLogger log) : Hub
 
         await base.OnDisconnectedAsync(exception);
     }
+
+    /// <summary>The exact set of direction literals the contract permits.</summary>
+    private static bool IsAllowedDirection(string value) => value is
+        nameof(Direction.None) or
+        nameof(Direction.Up) or
+        nameof(Direction.Down) or
+        nameof(Direction.Left) or
+        nameof(Direction.Right);
 
     private static PlayerState? PlayerFor(MatchState match, string connectionId)
     {

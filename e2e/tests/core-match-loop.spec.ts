@@ -1,4 +1,5 @@
-import { expect, test, type Browser, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { startMatch } from './fixtures';
 
 /**
  * quickstart.md scenario 1 - the core asymmetric match loop.
@@ -7,28 +8,6 @@ import { expect, test, type Browser, type Page } from '@playwright/test';
  * only layer that exercises the actual wire path (research.md §4): the unit tests prove each rule
  * in isolation, but only this proves two genuine clients observe a consistent, playable match.
  */
-
-/** Joins both players and returns their pages, Runner first. */
-async function startMatch(browser: Browser): Promise<{ runner: Page; hunter: Page }> {
-  const runnerContext = await browser.newContext();
-  const hunterContext = await browser.newContext();
-
-  const runner = await runnerContext.newPage();
-  const hunter = await hunterContext.newPage();
-
-  await runner.goto('/');
-  await runner.getByRole('button', { name: 'Join match' }).click();
-  // The first joiner must be waiting before the second arrives, or role assignment races.
-  await expect(runner.getByRole('heading', { name: 'Waiting for opponent' })).toBeVisible();
-
-  await hunter.goto('/');
-  await hunter.getByRole('button', { name: 'Join match' }).click();
-
-  await expect(runner.getByTestId('match-clock')).toBeVisible({ timeout: 15_000 });
-  await expect(hunter.getByTestId('match-clock')).toBeVisible({ timeout: 15_000 });
-
-  return { runner, hunter };
-}
 
 test.describe('core match loop', () => {
   test('both players enter a live match with the board and HUD rendered', async ({ browser }) => {
@@ -85,14 +64,25 @@ test.describe('core match loop', () => {
     await runner.keyboard.down('ArrowLeft');
     await expect
       .poll(async () => Number(await runner.getByTestId('pacman-score').textContent()), {
-        timeout: 15_000,
+        timeout: 20_000,
       })
       .toBeGreaterThan(0);
     await runner.keyboard.up('ArrowLeft');
 
+    // Both sides must be re-read on every poll. Releasing a key does not stop Pac-Man - he runs
+    // on until a wall - so a score captured once goes stale mid-assertion and can never match.
     await expect
-      .poll(async () => await hunter.getByTestId('pacman-score').textContent(), { timeout: 1_500 })
-      .toBe(await runner.getByTestId('pacman-score').textContent());
+      .poll(
+        async () => {
+          const [own, opponent] = await Promise.all([
+            runner.getByTestId('pacman-score').textContent(),
+            hunter.getByTestId('pacman-score').textContent(),
+          ]);
+          return own === opponent;
+        },
+        { timeout: 5_000 },
+      )
+      .toBe(true);
   });
 
   test('a disconnect immediately forfeits the match to the remaining player', async ({

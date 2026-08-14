@@ -6,4 +6,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+
+  <!--
+    Regenerates BalanceConstants.cs from shared/balance-constants.json before every build.
+    Constitution Principle I requires one edit site for balance values; wiring codegen into the
+    build is what stops the generated bindings silently going stale against the JSON.
+    Skipped when node is unavailable so a machine without it can still build.
+  -->
+  <Target Name="GenerateBalanceConstants" BeforeTargets="BeforeBuild">
+    <Exec Command="node &quot;$(MSBuildProjectDirectory)/../../../shared/codegen/generate.js&quot;"
+          ContinueOnError="true"
+          StandardOutputImportance="low" />
+  </Target>
+
 </Project>
