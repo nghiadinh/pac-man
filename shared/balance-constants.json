@@ -1,0 +1,56 @@
+{
+  "$comment": "SINGLE SOURCE OF TRUTH for every spec-derived balance constant. Per Constitution Principle I, balance changes edit this file ONLY; backend/src/MatchServer/Generated/BalanceConstants.cs and frontend/src/generated/balanceConstants.ts are code-generated from it by shared/codegen/generate.js and must never be hand-edited. Each entry cites the spec requirement it comes from.",
+
+  "movement": {
+    "pacmanBaseSpeed": 1.0,
+    "ghostBaseSpeed": 0.95,
+    "ghostCorneringMultiplier": 0.95,
+    "ghostSpeedFrightened": 0.7,
+    "eyesSpeed": 1.5,
+    "$spec": "FR-001 (base speeds + multiplicative cornering penalty until next tile center), FR-006 (frightened), FR-009 (eyes-only)"
+  },
+
+  "frightened": {
+    "frightenedDurationMs": 8000,
+    "frightenedInversionMs": 3000,
+    "ghostHouseLockoutMs": 5000,
+    "$spec": "FR-005 (8.0s, resets not stacks), FR-007 (3.0s input inversion), FR-009 (5.0s ghost house lockout)"
+  },
+
+  "vision": {
+    "visionRadiusTiles": 6,
+    "sonarIntervalMs": 4000,
+    "$spec": "FR-011 (6-tile radius + line-of-sight; 4.0s sonar cadence, map-relative quadrant)"
+  },
+
+  "antiCamping": {
+    "campRadiusTiles": 3,
+    "campTriggerMs": 5000,
+    "campSpeedPenalty": 0.15,
+    "$spec": "FR-012 (3-tile radius, 5.0s trigger, additional 15% reduction to 80% net; timer resets while Pac-Man visible)"
+  },
+
+  "match": {
+    "matchDurationMs": 180000,
+    "pacmanLives": 3,
+    "ghostRespawnDelayMs": 5000,
+    "clearThresholdPct": 0.7,
+    "collisionBoxTiles": 0.8,
+    "tickHz": 30,
+    "$spec": "FR-014 (180s), FR-002 (3 lives), FR-003 (5s ghost respawn), FR-017 (70% threshold), FR-004 (0.8x0.8 box), plan.md (~30Hz tick)"
+  },
+
+  "scoring": {
+    "pelletPoints": 10,
+    "powerPelletPoints": 50,
+    "ghostCatchChain": [200, 400, 800, 1600],
+    "pacmanEliminatedPoints": 500,
+    "timeBonusPerSecond": 5,
+    "$spec": "FR-018 (full scoring matrix), FR-009 (escalating chain)"
+  },
+
+  "network": {
+    "maxInputLatencyMs": 100,
+    "$spec": "SC-006 (round-trip input-to-effect budget)"
+  }
+}

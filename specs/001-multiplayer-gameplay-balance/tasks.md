@@ -35,15 +35,15 @@ Web app layout per `plan.md`: `backend/src/MatchServer/` (.NET 10 / ASP.NET Core
 
 **Purpose**: Project initialization and toolchain
 
-- [ ] T001 Create the repository directory structure (`backend/`, `frontend/`, `shared/`, `e2e/`) exactly as laid out in plan.md "Source Code (repository root)"
-- [ ] T002 [P] Initialize the .NET 10 solution and ASP.NET Core project in backend/src/MatchServer/MatchServer.csproj with the SignalR package reference
-- [ ] T003 [P] Initialize the React + TypeScript + Vite application in frontend/ (package.json, vite.config.ts, tsconfig.json) with @microsoft/signalr as a dependency
-- [ ] T004 [P] Create shared/balance-constants.json containing every spec-derived constant listed in research.md §5 (pacmanBaseSpeed, ghostBaseSpeed, frightenedDurationMs, frightenedInversionMs, ghostSpeedFrightened, eyesSpeed, ghostHouseLockoutMs, visionRadiusTiles, sonarIntervalMs, campRadiusTiles, campTriggerMs, campSpeedPenalty, matchDurationMs, clearThresholdPct, FR-018 point values, maxInputLatencyMs)
-- [ ] T005 Create the codegen script in shared/codegen/generate.js that emits backend/src/MatchServer/Generated/BalanceConstants.cs and frontend/src/generated/balanceConstants.ts from shared/balance-constants.json (depends on T004)
-- [ ] T006 [P] Initialize the xUnit test projects backend/tests/MatchServer.UnitTests/MatchServer.UnitTests.csproj and backend/tests/MatchServer.IntegrationTests/MatchServer.IntegrationTests.csproj (the latter referencing Microsoft.AspNetCore.Mvc.Testing and Microsoft.AspNetCore.SignalR.Client)
-- [ ] T007 [P] Configure Vitest and React Testing Library in frontend/vitest.config.ts and frontend/tests/unit/setup.ts
-- [ ] T008 [P] Initialize the Playwright workspace in e2e/package.json and e2e/playwright.config.ts, with `webServer` entries that start the backend (`dotnet run`) and frontend (`vite dev`) before tests
-- [ ] T009 [P] Configure linting and formatting in .editorconfig (C#) and frontend/.eslintrc.cjs + frontend/.prettierrc (TypeScript/React)
+- [X] T001 Create the repository directory structure (`backend/`, `frontend/`, `shared/`, `e2e/`) exactly as laid out in plan.md "Source Code (repository root)"
+- [X] T002 [P] Initialize the .NET 10 solution and ASP.NET Core project in backend/src/MatchServer/MatchServer.csproj with the SignalR package reference
+- [X] T003 [P] Initialize the React + TypeScript + Vite application in frontend/ (package.json, vite.config.ts, tsconfig.json) with @microsoft/signalr as a dependency
+- [X] T004 [P] Create shared/balance-constants.json containing every spec-derived constant listed in research.md §5 (pacmanBaseSpeed, ghostBaseSpeed, frightenedDurationMs, frightenedInversionMs, ghostSpeedFrightened, eyesSpeed, ghostHouseLockoutMs, visionRadiusTiles, sonarIntervalMs, campRadiusTiles, campTriggerMs, campSpeedPenalty, matchDurationMs, clearThresholdPct, FR-018 point values, maxInputLatencyMs)
+- [X] T005 Create the codegen script in shared/codegen/generate.js that emits backend/src/MatchServer/Generated/BalanceConstants.cs and frontend/src/generated/balanceConstants.ts from shared/balance-constants.json (depends on T004)
+- [X] T006 [P] Initialize the xUnit test projects backend/tests/MatchServer.UnitTests/MatchServer.UnitTests.csproj and backend/tests/MatchServer.IntegrationTests/MatchServer.IntegrationTests.csproj (the latter referencing Microsoft.AspNetCore.Mvc.Testing and Microsoft.AspNetCore.SignalR.Client)
+- [X] T007 [P] Configure Vitest and React Testing Library in frontend/vitest.config.ts and frontend/tests/unit/setup.ts
+- [X] T008 [P] Initialize the Playwright workspace in e2e/package.json and e2e/playwright.config.ts, with `webServer` entries that start the backend (`dotnet run`) and frontend (`vite dev`) before tests
+- [X] T009 [P] Configure linting and formatting in .editorconfig (C#) and frontend/.eslintrc.cjs + frontend/.prettierrc (TypeScript/React)
 
 ---
 

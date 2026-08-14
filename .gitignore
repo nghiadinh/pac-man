@@ -1,0 +1,50 @@
+# ---- .NET ----
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+packages/
+TestResults/
+*.trx
+artifacts/
+
+# ---- Node / TypeScript ----
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.vite/
+
+# ---- Generated (produced by shared/codegen) ----
+backend/src/MatchServer/Generated/
+frontend/src/generated/
+
+# ---- Playwright ----
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# ---- Env & secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# ---- Editors / OS ----
+.vs/
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
