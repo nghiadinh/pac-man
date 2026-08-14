@@ -14,19 +14,28 @@ Full specification: [`specs/001-multiplayer-gameplay-balance/spec.md`](specs/001
 
 Requires **.NET 10 SDK** and **Node.js 20+**.
 
-```bash
-# Terminal 1 - backend (also regenerates balance constants on build)
-dotnet run --project backend/src/MatchServer --urls http://localhost:5080
-
-# Terminal 2 - frontend
-npm install --prefix frontend
-npm run dev --prefix frontend
+```powershell
+./run.ps1
 ```
 
-Open the printed URL in **two** browser windows. The first to join is Pac-Man, the second is the
-Ghost, and the match clock starts once both are in.
+That starts both servers, waits until they answer, and opens two browser windows — the game needs
+two clients, since a match cannot start until both roles are filled. Click **Join match** in the
+first window, wait for "Waiting for opponent", then click it in the second.
 
-Controls: arrow keys or WASD.
+Controls: arrow keys or WASD. Ctrl+C stops everything.
+
+```powershell
+./run.ps1 -NoBrowser     # servers only
+./run.ps1 -Windowed      # each server in its own console
+./run.ps1 -Stop          # free the ports after a force-kill left servers behind
+```
+
+Or by hand, in two terminals:
+
+```bash
+dotnet run --project backend/src/MatchServer --urls http://localhost:5080
+npm install --prefix frontend; npm run dev --prefix frontend
+```
 
 ## Architecture
 
@@ -72,10 +81,18 @@ balance.
 Three layers, each catching what the others structurally cannot:
 
 ```bash
-dotnet test                              # 118 unit + 27 integration
-npm test --prefix frontend               # 27 component/render
-npx playwright test --prefix e2e         # 13 end-to-end, two real browsers
+dotnet test                     # 118 unit + 27 integration
+npm test --prefix frontend      # 27 component/render
 ```
+
+```powershell
+./run-e2e.ps1                          # 17 end-to-end, in visible browsers
+./run-e2e.ps1 -Spec core-match-loop    # just the core loop, ~3 min
+./run-e2e.ps1 -Headless                # no windows, for CI
+./run-e2e.ps1 -Report                  # browse the last run's traces and video
+```
+
+Playwright starts and stops the servers itself, so `run-e2e.ps1` does not need `run.ps1` first.
 
 | Layer | Answers |
 |---|---|
