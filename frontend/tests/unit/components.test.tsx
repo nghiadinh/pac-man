@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { FrightenedOverlay } from '../../src/components/FrightenedOverlay';
 import { Hud, clearedPercent, formatClock } from '../../src/components/Hud';
+import { JoinScreen } from '../../src/components/JoinScreen';
 import { ResultsScreen } from '../../src/components/ResultsScreen';
 import { SonarIndicator } from '../../src/components/SonarIndicator';
 import {
@@ -263,5 +265,78 @@ describe('ResultsScreen', () => {
     );
 
     expect(screen.getByTestId('result-reason')).toHaveTextContent('opponent disconnected');
+  });
+});
+
+describe('JoinScreen', () => {
+  it('offers a match without requiring a room code', async () => {
+    const onJoin = vi.fn();
+    render(<JoinScreen phase="idle" join={null} error={null} onJoin={onJoin} />);
+
+    await userEvent.click(screen.getByTestId('join-button'));
+
+    // Blank means auto-match, so nothing should be passed along.
+    expect(onJoin).toHaveBeenCalledWith(undefined);
+  });
+
+  it('passes a typed room code through', async () => {
+    const onJoin = vi.fn();
+    render(<JoinScreen phase="idle" join={null} error={null} onJoin={onJoin} />);
+
+    await userEvent.type(screen.getByTestId('room-code-input'), 'PLAY');
+    await userEvent.click(screen.getByTestId('join-button'));
+
+    expect(onJoin).toHaveBeenCalledWith('PLAY');
+  });
+
+  it('uppercases as the user types so the field shows what will be sent', async () => {
+    render(<JoinScreen phase="idle" join={null} error={null} onJoin={vi.fn()} />);
+
+    const input = screen.getByTestId('room-code-input');
+    await userEvent.type(input, 'play');
+
+    expect(input).toHaveValue('PLAY');
+  });
+
+  it('refuses characters the server would reject', async () => {
+    // I/O/0/1 are excluded server-side; blocking them at the keystroke avoids a pointless
+    // round-trip and a confusing error for a code the player cannot even type correctly.
+    render(<JoinScreen phase="idle" join={null} error={null} onJoin={vi.fn()} />);
+
+    const input = screen.getByTestId('room-code-input');
+    await userEvent.type(input, 'A1IO!B');
+
+    expect(input).toHaveValue('AB');
+  });
+
+  it('shows the room code to share while waiting', () => {
+    render(
+      <JoinScreen
+        phase="waiting"
+        join={{ matchId: 'K7QM', role: 'Runner', status: 'WaitingForPlayers', started: false }}
+        error={null}
+        onJoin={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId('room-code')).toHaveTextContent('K7QM');
+    expect(screen.getByText(/Share this/)).toBeInTheDocument();
+  });
+
+  it('surfaces a join failure and allows a retry', async () => {
+    const onJoin = vi.fn();
+    render(
+      <JoinScreen
+        phase="error"
+        join={null}
+        error="Room PLAY already has two players."
+        onJoin={onJoin}
+      />,
+    );
+
+    expect(screen.getByTestId('join-error')).toHaveTextContent('already has two players');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(onJoin).toHaveBeenCalled();
   });
 });

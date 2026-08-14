@@ -25,9 +25,9 @@ public sealed class DisconnectForfeitTests : IDisposable
         runner.On<JsonElement>("MatchEnded", o => ended.TrySetResult(o));
 
         await runner.StartAsync();
-        await runner.InvokeAsync<JoinResult>("JoinMatch");
+        await runner.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
         await hunter.StartAsync();
-        await hunter.InvokeAsync<JoinResult>("JoinMatch");
+        await hunter.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
 
         await hunter.DisposeAsync();
 
@@ -46,9 +46,9 @@ public sealed class DisconnectForfeitTests : IDisposable
         hunter.On<JsonElement>("MatchEnded", o => ended.TrySetResult(o));
 
         await runner.StartAsync();
-        await runner.InvokeAsync<JoinResult>("JoinMatch");
+        await runner.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
         await hunter.StartAsync();
-        await hunter.InvokeAsync<JoinResult>("JoinMatch");
+        await hunter.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
 
         await runner.DisposeAsync();
 
@@ -67,9 +67,9 @@ public sealed class DisconnectForfeitTests : IDisposable
         runner.On<JsonElement>("MatchEnded", o => ended.TrySetResult(o));
 
         await runner.StartAsync();
-        await runner.InvokeAsync<JoinResult>("JoinMatch");
+        await runner.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
         await hunter.StartAsync();
-        await hunter.InvokeAsync<JoinResult>("JoinMatch");
+        await hunter.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
 
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         await hunter.DisposeAsync();

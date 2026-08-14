@@ -118,6 +118,11 @@ The Ghost does not see the full map the way Pac-Man does — it only sees a radi
 - **FR-021**: System MUST resolve a same-instant collision between a normal-state Ghost-Pac-Man contact and a Power Pellet pickup by applying the elimination (life loss) first; the Power Pellet is still consumed, and any resulting Frightened State begins fresh only once Pac-Man has respawned.
 - **FR-022**: System MUST run all matches on a single fixed map; multi-map or map-selection support is out of scope for this feature.
 - **FR-023**: System MUST break an exact score tie during the ≥70%-cleared timeout evaluation (FR-017) in Pac-Man's favor.
+- **FR-024**: System MUST pair two players into the same match when both request one without naming a room, and MUST guarantee this holds even when both requests arrive simultaneously — two players requesting a match at the same instant MUST NOT end up waiting alone in separate matches.
+- **FR-025**: System MUST allow two players to agree a short room code in advance and join that specific match, so that a player can choose their opponent rather than being paired with whoever requests a match first.
+- **FR-026**: System MUST keep a match opened with a chosen room code private — it MUST NOT be offered to players who did not name that code, so the slot stays available for the intended opponent.
+- **FR-027**: System MUST refuse, with a distinguishable explanation, a request to join a room that is invalid or already has two players, and MUST NOT reroute that player into a different match instead.
+- **FR-028**: System MUST show each waiting player their room code so it can be shared with a chosen opponent, including for matches created by automatic pairing.
 
 ### Key Entities
 
@@ -142,7 +147,9 @@ The Ghost does not see the full map the way Pac-Man does — it only sees a radi
 
 ## Assumptions
 
-- The scope of this specification is limited to gameplay balance rules (speed, vision, power-pellet effects, anti-camping, win conditions, scoring) for a single match on a single fixed map (confirmed, FR-022); matchmaking, role selection between the two players, netcode/synchronization implementation, and map design/layout are out of scope.
+- The scope of this specification is limited to gameplay balance rules (speed, vision, power-pellet effects, anti-camping, win conditions, scoring) for a single match on a single fixed map (confirmed, FR-022); netcode/synchronization implementation and map design/layout are out of scope.
+- **Room joining (FR-024–FR-028) was added on 2026-08-15**, after the original "matchmaking is out of scope" assumption proved unworkable in practice: with three or more people connected there was no way to choose an opponent, and simultaneous joins could strand both players in separate empty matches. It covers pairing and room codes only — ranked matchmaking, skill rating, lobbies, and persistent player identity remain out of scope.
+- Role selection beyond first-joiner-is-Pac-Man is out of scope; players who want a particular side swap by taking turns joining first.
 - A "match" is a single 3-minute round; no best-of-series or automatic role-swap between rounds is defined by this specification. If side-swapping for fairness across multiple rounds is desired, it will be addressed in a separate specification.
 - Both players have a real-time connection with round-trip latency at or below 100ms (see SC-006), sufficient that the defined speed differentials (e.g., 95% vs. 100%) remain perceptually accurate; detailed network synchronization implementation is handled by existing underlying multiplayer infrastructure and is not redefined here.
 - The underlying movement model is grid-based (classic Pac-Man style), consistent with the source document's references to "grid unit speed."

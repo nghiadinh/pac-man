@@ -16,10 +16,35 @@ code rather than implicit framework behavior.
 
 ## Connection lifecycle
 
-1. Client connects to the `/hubs/match` endpoint and invokes `JoinMatch()`.
+1. Client connects to the `/hubs/match` endpoint and invokes `JoinMatch(roomCode)`.
+   - `roomCode` is **nullable but not omittable** — SignalR does not fill C# optional parameters,
+     so the client must send `null` explicitly to auto-match.
+   - **`null`** → paired with whoever is waiting in a public room.
+   - **A 4-character code** → joins that specific room, creating it if nobody has yet. This is how
+     two people play *each other* rather than whoever happens to click first.
 2. The backend assigns `role` (`Runner` first, `Hunter` second) and adds the connection to a
-   SignalR Group named for the match — role-selection UX beyond first-come-first-served is out of
-   scope for this feature (spec Assumptions).
+   SignalR Group named for the match. The group name **is** the room code.
+
+### Room codes
+
+- Four characters from `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` — uppercase and digits, minus `I`, `O`,
+  `0`, and `1`, which are the pairs people misread when reading a code off a screen or aloud.
+- Case-insensitive, and surrounding whitespace is trimmed, so a pasted code works.
+- Every room has one, including auto-matched rooms: it is returned in `JoinResult.matchId` so a
+  waiting player can share it and pull in a specific friend instead of waiting on a stranger.
+- **Rooms opened with a code are private**: auto-matching skips them. Otherwise a stranger would
+  take the slot being held for the friend, who would then find their own room "full".
+
+`JoinMatch` throws a `HubException` when:
+
+| Condition | Message |
+|---|---|
+| Code is not 4 valid characters | "That room code is not valid. Codes are 4 characters, letters and digits." |
+| Room already has two players | "Room `XXXX` already has two players." |
+
+A rejection is per-message: the connection stays usable and the client can retry with a different
+code. Joining a full room is **refused rather than rerouted** — silently matching the player
+against a stranger would be worse than an error, since they asked for a specific opponent.
 3. `Match.status` becomes `Active` once both roles are filled; the 180,000ms timer (FR-014) starts
    at that moment, and the backend begins its ~30Hz tick loop (per `plan.md` Performance Goals)
    for that match.

@@ -8,7 +8,18 @@ namespace MatchServer.State;
 /// </summary>
 public sealed class MatchState
 {
+    /// <summary>The room code. Short and shareable, so it doubles as the match identifier.</summary>
     public required string MatchId { get; init; }
+
+    /// <summary>
+    /// True when this room was opened with a chosen code rather than by auto-matching.
+    /// </summary>
+    /// <remarks>
+    /// Private rooms are invisible to auto-matching. Someone who agreed a code with a friend and
+    /// is waiting for them must not have a stranger dropped in instead - the stranger would take
+    /// the slot and the friend would then find the room "full".
+    /// </remarks>
+    public bool IsPrivate { get; init; }
 
     public MatchStatus Status { get; set; } = MatchStatus.WaitingForPlayers;
 

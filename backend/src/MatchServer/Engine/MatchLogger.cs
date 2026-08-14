@@ -24,6 +24,11 @@ public sealed class MatchLogger(ILogger<MatchLogger> logger)
     public void MatchStarted(string matchId) =>
         logger.LogInformation("match {MatchId}: both roles filled, timer started", matchId);
 
+    /// <summary>A room code the server refused. There is no match id yet to attribute it to.</summary>
+    public void RoomCodeRejected(string connectionId, string rawValue) =>
+        logger.LogWarning(
+            "rejected invalid room code {RawValue} from {ConnectionId}", rawValue, connectionId);
+
     /// <summary>An input the server refused. Rejected, never clamped into gameplay.</summary>
     public void InputRejected(string matchId, string connectionId, string rawValue) =>
         logger.LogWarning(

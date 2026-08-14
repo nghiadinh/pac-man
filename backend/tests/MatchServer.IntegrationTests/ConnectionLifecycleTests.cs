@@ -27,13 +27,13 @@ public sealed class ConnectionLifecycleTests : IDisposable
         await using var hunter = _factory.CreateHubConnection();
 
         await runner.StartAsync();
-        var runnerJoin = await runner.InvokeAsync<JoinResult>("JoinMatch");
+        var runnerJoin = await runner.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
 
         Assert.Equal("Runner", runnerJoin.Role);
         Assert.False(runnerJoin.Started); // timer waits for the second player
 
         await hunter.StartAsync();
-        var hunterJoin = await hunter.InvokeAsync<JoinResult>("JoinMatch");
+        var hunterJoin = await hunter.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
 
         Assert.Equal("Hunter", hunterJoin.Role);
         Assert.True(hunterJoin.Started);
@@ -52,9 +52,9 @@ public sealed class ConnectionLifecycleTests : IDisposable
         hunter.On<JsonElement>("StateUpdate", s => hunterStates.Add(s));
 
         await runner.StartAsync();
-        await runner.InvokeAsync<JoinResult>("JoinMatch");
+        await runner.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
         await hunter.StartAsync();
-        await hunter.InvokeAsync<JoinResult>("JoinMatch");
+        await hunter.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
 
         // State is broadcast from the moment a player joins, so the earliest snapshots are still
         // WaitingForPlayers - that is what drives the lobby screen. Only the active ones matter here.
@@ -106,9 +106,9 @@ public sealed class ConnectionLifecycleTests : IDisposable
         await using var hunter = _factory.CreateHubConnection();
 
         await runner.StartAsync();
-        await runner.InvokeAsync<JoinResult>("JoinMatch");
+        await runner.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
         await hunter.StartAsync();
-        await hunter.InvokeAsync<JoinResult>("JoinMatch");
+        await hunter.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
 
         // Constitution Fair-Play: out-of-range input must be refused outright, never coerced
         // into the nearest legal value.

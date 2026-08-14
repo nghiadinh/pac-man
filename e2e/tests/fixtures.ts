@@ -5,24 +5,38 @@ export interface MatchPages {
   hunter: Page;
 }
 
+/** Room codes for tests use the server's alphabet: no I, O, 0 or 1. */
+function uniqueRoomCode(): string {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from(
+    { length: 4 },
+    () => alphabet[Math.floor(Math.random() * alphabet.length)],
+  ).join('');
+}
+
 /**
  * Joins two browser contexts to one match and waits until it is live.
  *
- * The wait between the two joins is load-bearing: role assignment is first-come-first-served, so
- * both clients clicking Join simultaneously can race and land in different matches.
+ * Both clients enter the SAME room code rather than relying on auto-matching. That is not just
+ * belt-and-braces: the whole suite shares one backend, so a stray waiting room left by an earlier
+ * test could otherwise swallow one of these clients and pair the two tests against each other.
+ * A per-test code makes the pairing explicit and isolated.
  */
 export async function startMatch(browser: Browser): Promise<MatchPages> {
   const runner = await (await browser.newContext()).newPage();
   const hunter = await (await browser.newContext()).newPage();
+  const roomCode = uniqueRoomCode();
 
   await runner.goto('/');
-  await runner.getByRole('button', { name: 'Join match' }).click();
+  await runner.getByTestId('room-code-input').fill(roomCode);
+  await runner.getByTestId('join-button').click();
   await expect(runner.getByRole('heading', { name: 'Waiting for opponent' })).toBeVisible({
     timeout: 20_000,
   });
 
   await hunter.goto('/');
-  await hunter.getByRole('button', { name: 'Join match' }).click();
+  await hunter.getByTestId('room-code-input').fill(roomCode);
+  await hunter.getByTestId('join-button').click();
 
   await expect(runner.getByTestId('match-clock')).toBeVisible({ timeout: 20_000 });
   await expect(hunter.getByTestId('match-clock')).toBeVisible({ timeout: 20_000 });

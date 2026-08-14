@@ -45,7 +45,12 @@ export default function App() {
 
   return (
     <div className="app">
-      <JoinScreen phase={phase} join={join} error={error} onJoin={() => void connect()} />
+      <JoinScreen
+        phase={phase}
+        join={join}
+        error={error}
+        onJoin={(roomCode) => void connect(roomCode)}
+      />
     </div>
   );
 }

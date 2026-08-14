@@ -25,7 +25,7 @@ export interface MatchConnectionApi {
   lastScoreEvent: ScoreEventDto | null;
   sonarQuadrant: Quadrant | null;
   error: string | null;
-  connect: () => Promise<void>;
+  connect: (roomCode?: string) => Promise<void>;
   sendInput: (direction: Direction) => void;
 }
 
@@ -41,7 +41,7 @@ export function useMatchConnection(): MatchConnectionApi {
   const [sonarQuadrant, setSonarQuadrant] = useState<Quadrant | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const connect = useCallback(async () => {
+  const connect = useCallback(async (roomCode?: string) => {
     if (connectionRef.current) {
       return;
     }
@@ -53,21 +53,24 @@ export function useMatchConnection(): MatchConnectionApi {
     connectionRef.current = connection;
 
     try {
-      const result = await connection.connect({
-        onStateUpdate: (next) => {
-          stateRef.current = next;
-          setState(next);
-          setPhase(
-            next.status === 'Active' ? 'playing' : next.status === 'Ended' ? 'ended' : 'waiting',
-          );
+      const result = await connection.connect(
+        {
+          onStateUpdate: (next) => {
+            stateRef.current = next;
+            setState(next);
+            setPhase(
+              next.status === 'Active' ? 'playing' : next.status === 'Ended' ? 'ended' : 'waiting',
+            );
+          },
+          onScoreEvent: setLastScoreEvent,
+          onSonarPulse: setSonarQuadrant,
+          onMatchEnded: (result) => {
+            setOutcome(result);
+            setPhase('ended');
+          },
         },
-        onScoreEvent: setLastScoreEvent,
-        onSonarPulse: setSonarQuadrant,
-        onMatchEnded: (result) => {
-          setOutcome(result);
-          setPhase('ended');
-        },
-      });
+        roomCode,
+      );
 
       setJoin(result);
       setPhase(result.started ? 'playing' : 'waiting');

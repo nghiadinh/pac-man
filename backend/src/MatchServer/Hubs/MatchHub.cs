@@ -16,18 +16,37 @@ namespace MatchServer.Hubs;
 public sealed class MatchHub(MatchManager matches, MatchLogger log) : Hub
 {
     /// <summary>
-    /// Joins an open match or creates one. First joiner is the Runner, second the Hunter; the
+    /// Joins a match, or creates one. First joiner is the Runner, second the Hunter; the
     /// 180-second timer starts when the second player arrives.
     /// </summary>
-    public async Task<JoinResultDto> JoinMatch()
+    /// <param name="roomCode">
+    /// Omit to be paired with whoever is waiting. Supply a code to play with a specific person:
+    /// whichever of the two arrives first opens the room, and the second joins it. Codes are
+    /// case-insensitive.
+    /// </param>
+    public async Task<JoinResultDto> JoinMatch(string? roomCode = null)
     {
-        var handle = matches.JoinOrCreate(Context.ConnectionId, out var role);
+        var outcome = matches.JoinOrCreate(Context.ConnectionId, roomCode);
+
+        switch (outcome.Status)
+        {
+            case JoinStatus.InvalidRoomCode:
+                log.RoomCodeRejected(Context.ConnectionId, roomCode ?? string.Empty);
+                throw new HubException(
+                    "That room code is not valid. Codes are 4 characters, letters and digits.");
+
+            case JoinStatus.RoomFull:
+                throw new HubException(
+                    $"Room {MatchManager.NormalizeCode(roomCode!)} already has two players.");
+        }
+
+        var handle = outcome.Handle!;
         await Groups.AddToGroupAsync(Context.ConnectionId, handle.MatchId);
 
         var (status, started) = handle.Locked(match =>
             (match.Status.ToString(), match.Status == MatchStatus.Active));
 
-        return new JoinResultDto(handle.MatchId, role.ToString(), status, started);
+        return new JoinResultDto(handle.MatchId, outcome.Role.ToString(), status, started);
     }
 
     /// <summary>

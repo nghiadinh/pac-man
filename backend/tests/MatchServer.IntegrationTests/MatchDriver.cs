@@ -48,11 +48,11 @@ public sealed class MatchDriver : IAsyncDisposable
         hunter.On<JsonElement>("MatchEnded", o => driver.HunterMatchEnded.TrySetResult(o));
 
         await runner.StartAsync();
-        var runnerJoin = await runner.InvokeAsync<JoinResult>("JoinMatch");
+        var runnerJoin = await runner.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
         Assert.Equal("Runner", runnerJoin.Role);
 
         await hunter.StartAsync();
-        var hunterJoin = await hunter.InvokeAsync<JoinResult>("JoinMatch");
+        var hunterJoin = await hunter.InvokeAsync<JoinResult>("JoinMatch", (string?)null);
         Assert.Equal("Hunter", hunterJoin.Role);
 
         return driver;

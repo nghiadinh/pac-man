@@ -70,6 +70,7 @@ export interface OutcomeDto {
 }
 
 export interface JoinResultDto {
+  /** The room code — short and shareable, so it doubles as the match identifier. */
   matchId: string;
   role: 'Runner' | 'Hunter';
   status: string;
@@ -109,7 +110,13 @@ export class MatchConnection {
   private connection: HubConnection | null = null;
   private lastSentDirection: Direction = 'None';
 
-  async connect(handlers: MatchHandlers): Promise<JoinResultDto> {
+  /**
+   * Connects and joins a match.
+   *
+   * @param roomCode Omit to be paired with whoever is waiting. Supply a code agreed with a
+   *   friend to play them specifically — whichever of you arrives first opens the room.
+   */
+  async connect(handlers: MatchHandlers, roomCode?: string): Promise<JoinResultDto> {
     const connection = new HubConnectionBuilder()
       .withUrl(HUB_URL)
       .withAutomaticReconnect([]) // FR-020 makes a disconnect a forfeit; retrying would be a lie
@@ -132,7 +139,8 @@ export class MatchConnection {
     await connection.start();
     this.connection = connection;
 
-    return connection.invoke<JoinResultDto>('JoinMatch');
+    // Send null rather than an empty string: the server reads a blank code as "auto-match".
+    return connection.invoke<JoinResultDto>('JoinMatch', roomCode?.trim() || null);
   }
 
   /**

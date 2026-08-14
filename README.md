@@ -19,8 +19,12 @@ Requires **.NET 10 SDK** and **Node.js 20+**.
 ```
 
 That starts both servers, waits until they answer, and opens two browser windows — the game needs
-two clients, since a match cannot start until both roles are filled. Click **Join match** in the
-first window, wait for "Waiting for opponent", then click it in the second.
+two clients, since a match cannot start until both roles are filled.
+
+**Joining.** Leave the room code blank in both windows to be paired automatically. To play a
+specific person, agree a 4-character code and both enter it — whichever of you arrives first opens
+the room, and a room opened with a code is never handed to a stranger. Every waiting player is
+shown their room code, so you can also start blind and share the code afterwards.
 
 Controls: arrow keys or WASD. Ctrl+C stops everything.
 
